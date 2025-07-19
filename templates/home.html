@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% block content %}
+<p style="font-size:40px;background-image: linear-gradient(120deg, #1cdce8, #bb77ed, #f34a62);
+background-size: 200%;
+-webkit-text-fill-color: transparent;
+-webkit-background-clip: text;
+background-clip: text;
+animation: animated-gradient 5s ease-in-out infinite;; text-align: center; letter-spacing: 2px; text-transform: uppercase;">
+  ✨ RTP Voice Predictor ✨
+</p>
+<div class="hero-section">
+                  
+  <div class="animate-gradient-text pred-txt">Predicting</div>
+  <h1>emotions from your Voice</h1>
+  <p>
+    This is a deep learning model which can predict emotion by extracting
+    patterns from your speech.
+  </p>
+  <div class="ctns">
+    <a href="/prediction" class="btn">Predict Now</a>
+    <a href="realtimeprediction" class="s-ctn">Live prediction</a>
+  </div>
+</div>
+
+{% endblock %}

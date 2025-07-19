@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="redirect-cnt">
+  <div class="prediction-card">
+    <p class="pred-title">Prediction</p>
+    <span class="divider"></span>
+    <p class="emoji-txt">{{emo}}</p>
+    <p class="pred-answer">{{ pred }}</p>
+    <p><strong>Stress Level:</strong> {{ stress_level }}</p>
+  <p><strong>Time Taken:</strong> {{ time_taken }} seconds</p>
+  </div>
+</section>
+
+{% endblock%}

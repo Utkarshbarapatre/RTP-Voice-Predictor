@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+     
+        body {
+            color: #fff;
+            background: #0b0f18;
+            font-family: "Inter", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-card1 {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        .form-heading {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        .form-field {
+            margin-bottom: 15px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #000;
+        }
+        .sendMessage-btn {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.1s ease-in-out;
+        }
+        .sendMessage-btn:hover {
+            background: #0056b3;
+            transform: scale(0.97);
+        }
+        .sendMessage-btn:active {
+            transform: translateY(2px);
+        }
+        
+        
+        
+    </style>
+</head>
+<body>
+    <div class="form-card1">
+        <form action="https://formsubmit.co/dfd9ff1d11c0080685b1057a37527d4a" method="POST" class="form">
+            <p class="form-heading">Get In Touch</p>
+            <div class="form-field">
+                <input required placeholder="Name" name="Name" class="input-field" type="text" />
+            </div>
+            <div class="form-field">
+                <input required name="Email" placeholder="Email" class="input-field" type="email" />
+            </div>
+            <div class="form-field">
+                <input required name="Subject" placeholder="Subject" class="input-field" type="text" />
+            </div>
+            <div class="form-field">
+                <textarea required name="Description" placeholder="Message" cols="30" rows="3" class="input-field"></textarea>
+            </div>
+            <button class="sendMessage-btn">Send Message</button>
+        </form>
+    </div>
+</body>
+</html>

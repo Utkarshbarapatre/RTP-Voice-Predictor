@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #231f20; /* dark background color */
+        }
+        /* New styles for charts and parameter ratings */
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .parameter-rating {
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .rating-high {
+            background-color: #dd0909;
+            color: white;
+        }
+        .rating-moderate {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .rating-low {
+            background-color: #35dc51;
+            color: white;
+        }
+        .btn-action {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .result-card {
+            border-left: 5px solid;
+            background-color: #2d2a2b;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .result-good {
+            border-color: #28a745;
+        }
+        .result-needs-improvement {
+            border-color: #ffc107;
+        }
+        .prediction-container {
+            margin-top: 30px;
+        }
+        .chart-row {
+            margin-top: 20px;
+        }
+        .chart-card {
+            background-color: #2d2a2b;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+        .chart-title {
+            color: #ffc107;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        /* Optional field styling */
+        .optional-field {
+            border-top: 1px dashed #444;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        .optional-title {
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+    </style>
+    <title>Predict | Team Performance</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="py-5 text-center">
+        <img class="d-block mx-auto mb-4" src="/end_to_end_deployment/static/img/churn.jpg" alt="" style="width: 150px; height: auto;">
+        <h1 style="color:white;">Team Performance Prediction</h1>
+        <p class="lead" style="color:white;">Fill the values below to predict <strong>"Team Performance"</strong></p>
+    </div>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-12">
+            <h4 class="mb-3" style="color:white;" align="center">Team Details</h4>
+
+            <br> 
+             <form action="{{ url_for('predict') }}" method="POST" class="needs-validation">
+                <!-- Add Team Name field (optional) -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <label for="team_name" style="color:white;">Team Name (Optional)</label>
+                        <input type="text" class="form-control" id="team_name" name="team_name" placeholder="Enter team name">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="Tenure" style="color:white;">Number Of Team Members<br>
+                            <small style="color:white;"></small></label>
+                        <input type="text" class="form-control" id="Tenure" name="Team_Members" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="Citytier" style="color:white;">Role Distribution<br></label>
+                        <select id="Citytier" name="Role_Distribution" class="form-control" required>
+                            <option value="" selected></option>
+                            <option value="0">Skewed</option>
+                            <option value="1">Balanced</option>
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="Warehousetohome" style="color:white;">Experience Level<br></label>
+                        <br>
+                        <input type="text" class="form-control" step="0.01" id="Warehousetohome" name="Experience_Level"
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="Gender" style="color:white;">Skill Diversity
+                        </label>
+                        <br>
+                        <input type="text" class="form-control" step="0.01" id="Gender" name="Skill_Diversity" required>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="Hourspendonapp" style="color:white;">Task Completion Rate</label>
+                        <br>
+                        <small style="color:white;"> (In Percentage)</small>
+                        <br>
+                        <input type="text" step="0.01" class="form-control" id="Hourspendonapp"
+                               name="Task_Completion_Rate" placeholder="" value="" required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="Numberofdeviceregistered" style="color:white;">Error Rate
+                            <Registered></Registered>
+                        </label>
+                        <br>
+                        <small style="color:white;"> (Max Upto 10)</small>
+                        <br>
+                        <input type="text" step="0.01" class="form-control" id="Numberofdeviceregistered"
+                               name="Error_Rate" placeholder="" value="" required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="Satisfactionscore" style="color:white;">Productivity Score<br>
+                            <small style="color:white;"></small></label>
+                        <br>
+
+                        <br>
+                        <input type="text" step="0.01" class="form-control" id="Satisfactionscore"
+                               name="Productivity_Score" placeholder="" value="" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="Maritalstatus" style="color:white;">Quality Score</label>
+                        <br>
+                        <small style="color:white;"> (Max Upto 10)</small>
+                        <br>
+                        <input type="text" step="0.01" class="form-control" id="Maritalstatus" name="Quality_Score"
+                               placeholder="" value="" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="Numberofaddress" style="color:white;">Efficiency Ratio<br>
+                            <small style="color:white;"></small>
+                        </label>
+                        <input type="text" step="0.01" class="form-control" id="Numberofaddress" name="Efficiency_Ratio"
+                               placeholder="" value="" required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="Complain" style="color:white;">Collaboration Score<br>
+                            <small style="color:white;"></small></label>
+                        <br>
+                        <input type="text" step="0.01" class="form-control" id="Complain" name="Collaboration_Score"
+                               placeholder="" value="" required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="Orderamounthikefromlastyear" style="color:white;">Conflict Occurrences<br>
+                        </label>
+                        <br>
+                        <select id="Orderamounthikefromlastyear" name="Conflict_Occurrences" class="form-control"
+                                required>
+                            <option value="" selected></option>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="Couponused" style="color:white;">Engagement Level</label>
+                        <small style="color:white;"> (Upto 100)</small>
+
+                        <br>
+                        <input type="text" step="0.01" class="form-control" id="Couponused" name="Engagement_Level"
+                               placeholder="" value="" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="Ordercount" style="color:white;">Training Hours</label>
+                        <input type="text" class="form-control" id="Ordercount" name="Training_Hours" placeholder=""
+                               value="" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="Daysincelastorder" style="color:white;">Revenue Generated</label>
+                        <input type="text" class="form-control" id="Daysincelastorder" name="Revenue_Generated"
+                               placeholder="" value="" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="Cashbackamount" style="color:white;">Customer Satisfaction</label>
+                        <input type="text" class="form-control" id="Cashbackamount" name="Customer_Satisfaction"
+                               placeholder="" value="" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="Milestones Achieved" style="color:white;">Milestones Achieved</label>
+                        <input type="text" class="form-control" id="Milestones Achieved" name="Milestones_Achieved"
+                               placeholder="" value="" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="Average Time to Complete Task" style="color:white;">Average Time to Complete
+                            Task</label>
+                        <input type="text" class="form-control" id="Average Time to Complete Task"
+                               name="Time_to_Complete" placeholder="" value="" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="Overtime Hours" style="color:white;">Overtime Hours</label>
+                        <input type="text" class="form-control" id="Overtime Hours" name="Overtime_Hours" placeholder=""
+                               value="" required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="Planned vs. Actual Hours" style="color:white;">Planned vs. Actual Hours</label>
+                        <input type="text" step="0.01" class="form-control" id="Planned vs. Actual Hours"
+                               name="Planned_vs_Actual" placeholder="" value="" required>
+                    </div>
+                </div>
+
+                <!-- Add new optional parameters section -->
+                <div class="optional-field">
+                    <h5 class="optional-title">Additional Parameters (Optional)</h5>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="Team_Satisfaction" style="color:white;">Team Satisfaction Index</label>
+                            <input type="text" step="0.01" class="form-control" id="Team_Satisfaction" name="Team_Satisfaction"
+                                   placeholder="0-10" value="">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="Communication_Score" style="color:white;">Team Communication Score</label>
+                            <input type="text" step="0.01" class="form-control" id="Communication_Score" name="Communication_Score"
+                                   placeholder="0-10" value="">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="Deadline_Adherence" style="color:white;">Deadline Adherence (%)</label>
+                            <input type="text" step="0.01" class="form-control" id="Deadline_Adherence" name="Deadline_Adherence"
+                                   placeholder="0-100" value="">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="Manager_Evaluation" style="color:white;">Manager's Evaluation Score</label>
+                            <input type="text" step="0.01" class="form-control" id="Manager_Evaluation" name="Manager_Evaluation"
+                                   placeholder="0-10" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <center>
+                    <button class="btn btn-primary btn-lg" type="submit">Predict</button>
+                </center>
+            </form>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+<center>
+    <div class="container my-5">
+        <div class="prediction-container">
+            <h1 style="color:white">Prediction Result</h1>
+            <p class="prediction" style="color:white">Based on the provided details, the "Team Performance" is:</p>
+            <h2 class="result-text" style="color:white">{{ result }}</h2>
+            
+            <!-- Add action buttons for report generation -->
+            {% if result %}
+            <div class="mt-4">
+                <a href="{{ url_for('download_team_performance_report') }}" class="btn btn-primary btn-action">
+                    <i class="fas fa-download mr-2"></i> Download Report
+                </a>
+                <button type="button" class="btn btn-success btn-action" data-toggle="modal" data-target="#emailReportModal">
+                    <i class="fas fa-envelope mr-2"></i> Email Report
+                </button>
+            </div>
+            {% endif %}
+            
+            <!-- Add parameter ratings display -->
+            {% if parameter_ratings %}
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="result-card">
+                        <h3 style="color:white">Parameter Ratings</h3>
+                        <div class="row mt-3">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h5 style="color:white">Skill Diversity</h5>
+                                    <div class="parameter-rating rating-{{ parameter_ratings['Skill Diversity']|lower }}">
+                                        {{ parameter_ratings['Skill Diversity'] }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h5 style="color:white">Productivity Score</h5>
+                                    <div class="parameter-rating rating-{{ parameter_ratings['Productivity Score']|lower }}">
+                                        {{ parameter_ratings['Productivity Score'] }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h5 style="color:white">Conflict Occurrences</h5>
+                                    <div class="parameter-rating rating-{{ parameter_ratings['Conflict Occurrences']|lower }}">
+                                        {{ parameter_ratings['Conflict Occurrences'] }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h5 style="color:white">Overall</h5>
+                                    <div class="parameter-rating rating-{{ 'high' if parameter_ratings['Overall'] == 'Good' else 'moderate' }}">
+                                        {{ parameter_ratings['Overall'] }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Add charts display -->
+            {% if charts %}
+            <div class="chart-row">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h4 class="chart-title">Key Metrics</h4>
+                            <div class="chart-container">
+                                <img src="data:image/png;base64,{{ charts.bar_chart }}" class="img-fluid" alt="Key Metrics Chart">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h4 class="chart-title">Team Capabilities</h4>
+                            <div class="chart-container">
+                                <img src="data:image/png;base64,{{ charts.radar_chart }}" class="img-fluid" alt="Team Capabilities Radar Chart">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h4 class="chart-title">Performance Score</h4>
+                            <div class="chart-container">
+                                <img src="data:image/png;base64,{{ charts.gauge_chart }}" class="img-fluid" alt="Performance Score Gauge">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h4 class="chart-title">Contribution Factors</h4>
+                            <div class="chart-container">
+                                <img src="data:image/png;base64,{{ charts.pie_chart }}" class="img-fluid" alt="Contribution Factors Pie Chart">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</center> 
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+        <p class="mb-1"></p>
+    </footer>
+</div>
+
+<!-- Email Report Modal -->
+<div class="modal fade" id="emailReportModal" tabindex="-1" role="dialog" aria-labelledby="emailReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="emailReportModalLabel">Email Team Performance Report</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="emailReportForm">
+                    <div class="form-group">
+                        <label for="emailAddress">Email Address</label>
+                        <input type="email" class="form-control" id="emailAddress" value="{{ session.get('user_email', '') }}" required>
+                    </div>
+                </form>
+                <div id="emailStatus"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="sendEmailBtn">Send Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+<!-- Add JavaScript for email sending -->
+<!-- Replace the existing JavaScript for email sending in predict.html with this improved version -->
+<script>
+    $(document).ready(function() {
+        $('#sendEmailBtn').click(function() {
+            const email = $('#emailAddress').val();
+            if (!email) {
+                $('#emailStatus').html('<div class="alert alert-danger">Please enter an email address</div>');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                $('#emailStatus').html('<div class="alert alert-danger">Please enter a valid email address</div>');
+                return;
+            }
+            
+            $('#emailStatus').html('<div class="alert alert-info">Sending email, please wait...</div>');
+            $('#sendEmailBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...');
+            
+            // Use the team performance email endpoint
+            $.ajax({
+                url: '/send_team_performance_email/' + email,
+                type: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        $('#emailStatus').html('<div class="alert alert-success">' + response.message + '</div>');
+                    } else {
+                        $('#emailStatus').html('<div class="alert alert-danger">' + response.message + '</div>');
+                        console.error('Email error:', response.message);
+                    }
+                    $('#sendEmailBtn').prop('disabled', false).text('Send Report');
+                },
+                error: function(xhr, status, error) {
+                    let errorMessage = 'An error occurred while sending the email';
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.message) {
+                            errorMessage = response.message;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing response:', e);
+                    }
+                    $('#emailStatus').html('<div class="alert alert-danger">' + errorMessage + '</div>');
+                    $('#sendEmailBtn').prop('disabled', false).text('Send Report');
+                    console.error('AJAX error:', status, error);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

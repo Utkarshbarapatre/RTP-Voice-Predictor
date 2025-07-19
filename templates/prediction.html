@@ -1,0 +1,506 @@
+{% extends "base.html" %} {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTP Voice Predictor</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            color: #000;
+            background: #eef0f3;
+            font-family: "Inter", sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Bubble Animation Background */
+        .bubbles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            width: 40px;
+            height: 40px;
+            background: rgba(83, 244, 118, 0.2);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: rise 10s infinite ease-in;
+        }
+
+        .bubble:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            left: 10%;
+            animation-duration: 8s;
+        }
+
+        .bubble:nth-child(2) {
+            width: 20px;
+            height: 20px;
+            left: 20%;
+            animation-duration: 5s;
+            animation-delay: 1s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            left: 35%;
+            animation-duration: 7s;
+            animation-delay: 2s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 80px;
+            height: 80px;
+            left: 50%;
+            animation-duration: 11s;
+            animation-delay: 0s;
+        }
+
+        .bubble:nth-child(5) {
+            width: 35px;
+            height: 35px;
+            left: 55%;
+            animation-duration: 6s;
+            animation-delay: 1s;
+        }
+
+        .bubble:nth-child(6) {
+            width: 45px;
+            height: 45px;
+            left: 65%;
+            animation-duration: 8s;
+            animation-delay: 3s;
+        }
+
+        .bubble:nth-child(7) {
+            width: 90px;
+            height: 90px;
+            left: 70%;
+            animation-duration: 12s;
+            animation-delay: 2s;
+        }
+
+        .bubble:nth-child(8) {
+            width: 25px;
+            height: 25px;
+            left: 80%;
+            animation-duration: 6s;
+            animation-delay: 2s;
+        }
+
+        .bubble:nth-child(9) {
+            width: 15px;
+            height: 15px;
+            left: 90%;
+            animation-duration: 5s;
+            animation-delay: 1s;
+        }
+
+        .bubble:nth-child(10) {
+            width: 50px;
+            height: 50px;
+            left: 25%;
+            animation-duration: 10s;
+            animation-delay: 4s;
+        }
+
+        @keyframes rise {
+            0% {
+                bottom: -100px;
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(100px);
+            }
+            100% {
+                bottom: 1080px;
+                transform: translateX(-200px);
+            }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        nav ul {
+            display: flex;
+            width: 18%;
+            justify-content: space-between;
+        }
+
+        nav ul li {
+            list-style: none;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #0a0a0a;
+            cursor: pointer;
+        }
+
+        .btn {
+            border: none;
+            color: #000;
+            border-radius: 8px;
+            background-color: #53f476;
+            font-size: 1rem;
+            padding: 12px 32px;
+            font-family: "Inter", sans-serif;
+            font-style: normal;
+            font-weight: 600;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: scale(0.97);
+            background-color: #2dc44e;
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+        }
+
+        .stop {
+            background-color: #f34a62;
+        }
+
+        .stop:hover {
+            background-color: #cf2c44;
+        }
+
+        .prediction-section {
+            display: flex;
+            width: 100%;
+            min-height: 80vh;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .upload-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 300px;
+            height: 70px;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .pred-btn {
+            margin-top: 20px;
+        }
+
+        .asset-icon {
+            padding: 0.8rem;
+            background: rgba(83, 244, 118, 0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .asset-icon:hover {
+            background: rgba(83, 244, 118, 0.4);
+            transform: scale(1.05);
+        }
+
+        label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input {
+            display: none;
+        }
+
+        .upload-container > p {
+            margin-left: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        #file-name-display {
+            margin: 10px 0;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .prediction-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .pred-title {
+            font-weight: 700;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .divider {
+            width: 80%;
+            margin: 1rem auto;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .pred-answer {
+            text-transform: capitalize;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .emoji-txt {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .report-btn {
+            background-color: #4a90e2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .report-btn:hover {
+            background-color: #3a7bc8;
+        }
+
+        /* Tips Section */
+        .tips-section {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tips-section h3 {
+            color: #333;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .tips-section h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #53f476, #2dc44e);
+            border-radius: 3px;
+        }
+
+        .tips-section ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+            color: #444;
+        }
+
+        .tips-section li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .tips-section li:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2353f476'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .toggle-tips-btn {
+            background: linear-gradient(135deg, #53f476, #2dc44e);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(45, 196, 78, 0.3);
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-tips-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(45, 196, 78, 0.4);
+        }
+
+        .toggle-tips-btn:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Bubble Animation Background -->
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <div class="prediction-section">
+        <form class="form" method="POST" enctype="multipart/form-data">
+            <div class="upload-container">
+                <label for="uploader">
+                    <svg class="asset-icon" width="28" height="29" viewBox="0 0 28 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.45385 28.5017C8.21459 28.4957 6.98888 28.2434 5.84807 27.7592C4.70727 27.2751 3.67415 26.5689 2.80885 25.6817C1.95005 24.8677 1.26018 23.8924 0.778726 22.8115C0.297268 21.7307 0.0336713 20.5655 0.0030203 19.3826C-0.0276307 18.1998 0.175265 17.0225 0.600098 15.9181C1.02493 14.8138 1.66336 13.804 2.47885 12.9467L13.5189 1.8017C14.1084 1.21321 14.8111 0.750312 15.5846 0.440941C16.358 0.131571 17.1861 -0.0178508 18.0189 0.00169801C18.9109 0.00473572 19.7935 0.185356 20.615 0.533027C21.4365 0.880697 22.1806 1.38846 22.8039 2.0267C24.0443 3.22106 24.7637 4.85647 24.8059 6.57796C24.848 8.29945 24.2094 9.96809 23.0289 11.2217L11.9289 22.3667C11.5733 22.7246 11.1503 23.0084 10.6842 23.2015C10.2181 23.3946 9.71834 23.4933 9.21385 23.4917C8.66887 23.4924 8.12926 23.384 7.62688 23.1727C7.12451 22.9614 6.66954 22.6517 6.28885 22.2617C5.52795 21.525 5.08851 20.5178 5.06604 19.4589C5.04358 18.4 5.43988 17.375 6.16885 16.6067L16.4139 6.3167C16.7054 6.12305 17.0555 6.03747 17.4036 6.07477C17.7516 6.11207 18.0756 6.2699 18.3195 6.52094C18.5634 6.77197 18.7119 7.10041 18.7392 7.44936C18.7664 7.79831 18.6708 8.14582 18.4689 8.4317L8.22385 18.7217C8.05302 18.9275 7.96986 19.1922 7.99231 19.4587C8.01475 19.7253 8.141 19.9723 8.34385 20.1467C8.55492 20.3592 8.83946 20.4827 9.13885 20.4917C9.24976 20.4933 9.35988 20.4729 9.46286 20.4317C9.56584 20.3905 9.65964 20.3293 9.73885 20.2517L20.8239 9.1067C21.4461 8.41547 21.7713 7.50715 21.7292 6.57807C21.6871 5.649 21.281 4.77382 20.5989 4.1417C19.9652 3.48386 19.1036 3.09389 18.1912 3.05204C17.2788 3.01018 16.385 3.31963 15.6939 3.9167L4.60885 15.0017C4.06982 15.5807 3.65059 16.2605 3.37529 17.0021C3.09999 17.7437 2.97406 18.5324 3.00473 19.3228C3.0354 20.1133 3.22207 20.8899 3.554 21.6079C3.88594 22.3259 4.35658 22.9712 4.93885 23.5067C5.52277 24.112 6.22146 24.5949 6.9941 24.9271C7.76674 25.2594 8.59784 25.4343 9.43885 25.4417C10.164 25.4476 10.8831 25.3102 11.555 25.0373C12.2268 24.7644 12.8382 24.3615 13.3539 23.8517L24.4389 12.7067C24.5777 12.5668 24.7428 12.4557 24.9246 12.3796C25.1064 12.3036 25.3015 12.2641 25.4986 12.2634C25.6956 12.2627 25.8909 12.3008 26.0733 12.3756C26.2557 12.4504 26.4215 12.5603 26.5614 12.6992C26.7012 12.8381 26.8123 13.0031 26.8884 13.185C26.9645 13.3668 27.004 13.5618 27.0047 13.7589C27.0054 13.956 26.9673 14.1513 26.8925 14.3336C26.8177 14.516 26.7077 14.6818 26.5689 14.8217L15.4839 25.9667C14.6968 26.7677 13.7584 27.4042 12.7233 27.8394C11.6881 28.2746 10.5768 28.4997 9.45385 28.5017Z" fill="white" />
+                    </svg>
+                </label>
+                <p>Select file or drag and drop</p>
+                <input id="uploader" class="demo1" type="file" multiple placeholder="Select Files" name="audio-file" onchange="showFileName()" />
+            </div>
+            <p id="file-name-display"></p>
+            <button type="submit" class="btn pred-btn">Predict</button>
+        </form>
+
+        {% if prediction != "" %}
+        <div class="prediction-card">
+            <p class="pred-title">Prediction</p>
+            <span class="divider"></span>
+            {% if emoji != "" %}
+            <p class="emoji-txt">{{ emoji }}</p>
+            {% endif %}
+            <p class="pred-answer">{{ prediction }}</p>
+            <p><strong>Stress Level:</strong> {{ stress_level }}</p>
+            <p><strong>Time Taken:</strong> {{ time_taken }} seconds</p>
+            <button class="btn report-btn">
+                <a href="{{url_for('generate_report')}}" style="color: inherit; text-decoration: none;">
+                    Generate Report
+                </a>
+            </button>
+            <a href="{{ url_for('send_email_report', email=session.get('user_email')) }}" class="btn" style="margin-top: 10px;">
+                📩 Send Report
+            </a>
+            <button id="toggle-tips-btn" class="toggle-tips-btn" onclick="toggleTips()">
+                💡 Show Stress Reduction Tips
+            </button>
+        </div>
+
+        <!-- Tips Section (will be shown after clicking the button in prediction results) -->
+        <div id="tips-section" class="tips-section">
+            <h3>Stress Reduction Tips</h3>
+            <ul>
+                <li>🌿 Practice deep breathing exercises to calm your mind.</li>
+                <li>🌼 Take regular breaks throughout your day to avoid burnout.</li>
+                <li>💪 Exercise regularly to release endorphins and reduce stress.</li>
+                <li>😴 Ensure you're getting enough sleep every night.</li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Show file name when selected
+        function showFileName() {
+            const fileInput = document.getElementById('uploader');
+            const fileNameDisplay = document.getElementById('file-name-display');
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = `Selected file: ${fileInput.files[0].name}`;
+            }
+        }
+
+        // Toggle tips section visibility
+        function toggleTips() {
+            const tipsSection = document.getElementById('tips-section');
+            const tipsButton = document.getElementById('toggle-tips-btn');
+            
+            if (tipsSection.style.display === 'none' || tipsSection.style.display === '') {
+                tipsSection.style.display = 'block';
+                tipsButton.textContent = '🔼 Hide Stress Reduction Tips';
+            } else {
+                tipsSection.style.display = 'none';
+                tipsButton.textContent = '💡 Show Stress Reduction Tips';
+            }
+        }
+    </script>
+{% endblock %}
+</body>
+</html>
